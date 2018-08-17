@@ -1,9 +1,7 @@
 from tkinter import *
 
-root = Tk()
-root.title("comics")
-root.geometry('450x300')
-
+#-------------------------------------------------------------------------------
+#FUNCTIONS
 def update_label():
     comic_info_name.set("")
     for p in comics:
@@ -16,21 +14,43 @@ def sell_comics():
     for c in comics:
         try:
             if selected_comic_sell.get() == c._name:
-                if int(num_comics.get()) >= 1 and int(num_comics.get()) <= c._stock:
-                    c._stock -= int(num_comics.get())
-                    message.set("You sold {} Comics".format(int(num_comics.get())))
+                if int(num_comics_sell.get()) >= 1 and int(num_comics_sell.get()) <= c._stock:
+                    c._stock -= int(num_comics_sell.get())
+                    message.set("You sold {} Comics".format(int(num_comics_sell.get())))
 
-                elif int(num_comics.get()) <= 0:
+                elif int(num_comics_sell.get()) <= 0:
                     message.set("Please enter a positive intiger")
 
-                elif int(num_comics.get()) > c._stock:
+                elif int(num_comics_sell.get()) > c._stock:
                     message.set("Please enter a value that is valid")
 
         except ValueError:
-            message.set("Please enter an integer value!")
+            message.set("Please enter an integer value")
 
     update_label()
 
+def stock_comics():
+    for c in comics:
+        try:
+            if selected_comic_stock.get() == c._name:
+                if int(num_comics_stock.get()) >= 1 and int(num_comics_stock.get()) <= 99999:
+                    c._stock += int(num_comics_stock.get())
+                    message.set("You re-stocked {} Comics".format(int(num_comics_stock.get())))
+
+                elif int(num_comics_stock.get()) <= 0:
+                    message.set("Please enter a positive intiger")
+
+        except ValueError:
+            message.set("Please enter an integer value")
+
+    update_label()
+
+#
+#END OF FUNCTIONS
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#OBJECT ORIENTATION SETUP
 class Comics:
     def __init__(self, name, stock):
         self._name = name   
@@ -38,14 +58,22 @@ class Comics:
         comics.append(self)
         comic_names.append(self._name)
 
+
+root = Tk()
+root.title("comics")
+root.geometry('800x800')
+
 comics = []
 comic_names = []
 
 Comics("Python Panic", 8)
 Comics("Scratch The Cat", 12)
 Comics("Tony Tkinter", 3)
+#END OF OBJECT ORIENTATION
+#-------------------------------------------------------------------------------
 
-#Labels - Printing info at top
+#-------------------------------------------------------------------------------
+#INFO PANEL
 comic_info_name = StringVar()
 comic_info_stock = StringVar()
 
@@ -54,8 +82,12 @@ comic_label_name.grid(row=0, column = 0)
 
 comic_label_stock = Label(root, textvariable=comic_info_stock, justify=LEFT)
 comic_label_stock.grid(row=0, column = 1)
+#END OF INFO PANEL
+#-------------------------------------------------------------------------------
 
-#SELLING COMICS
+
+#-------------------------------------------------------------------------------
+#SELLING PANEL
 #Heading
 sell_items = Label(root, text = "Sell Comics", justify=LEFT)
 sell_items.grid(row=1, column = 0)
@@ -68,9 +100,9 @@ selected_comic_sell.set(comic_names[0])
 comic_menu = OptionMenu(root, selected_comic_sell, *comic_names)
 comic_menu.grid(row=3, column = 0)
 
-num_comics = StringVar()
+num_comics_sell = StringVar()
 
-comic_entry = Entry(root, textvariable=num_comics, justify=LEFT)
+comic_entry = Entry(root, textvariable=num_comics_sell, justify=LEFT)
 comic_entry.grid(row=3, column = 1)
 
 select_btn = Button(root, text="Select", command=sell_comics, justify=RIGHT)
@@ -83,6 +115,43 @@ message.set("")
 #selling Comic error
 error_message_sell = Label(root, textvariable=message, fg="red")
 error_message_sell.grid(row=4, column = 1)
+#END OF SELLING PANEL
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#RE-STOCK PANEL
+#Heading
+stock_items = Label(root, text = "Restock Comics", justify=LEFT)
+stock_items.grid(row=1, column = 2)
+
+#selecting from list
+selected_comic_stock = StringVar()
+selected_comic_stock.set(comic_names[0])
+
+#Dropdown
+comic_menu = OptionMenu(root, selected_comic_stock, *comic_names)
+comic_menu.grid(row=3, column = 2)
+
+num_comics_stock = StringVar()
+
+comic_entry_stock = Entry(root, textvariable=num_comics_stock, justify=LEFT)
+comic_entry_stock.grid(row=3, column = 3)
+
+select_btn_stock = Button(root, text="Select", command=stock_comics, justify=RIGHT)
+select_btn_stock.grid(row=5, column = 3)
+
+#message re-direct
+message = StringVar()
+message.set("")
+
+#restock Comic error
+error_message_sell = Label(root, textvariable=message, fg="green")
+error_message_sell.grid(row=4, column = 3)
+#END OF RE-STOCK PANEL
+#-------------------------------------------------------------------------------
+
+
+
 
 update_label()
 root.mainloop()
