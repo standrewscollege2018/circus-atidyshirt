@@ -66,39 +66,40 @@ def sell_comics():
     update_label()
 
 def stock_comic():
-    for c in comics:
-        try:
-            if selected_comic_stock.get() == c._name:
-                if int(num_comics_stock.get()) >= 1 and (int(num_comics_stock.get()) + c._stock) <= 20:
-                    c.restock(int(num_comics_stock.get()))
-                    message2.set("You stocked {} {} comics".format(int(num_comics_stock.get()), c._name))
+    try:
+        if int(num_comics_stock.get()) >= 1 and (int(num_comics_stock.get()) + c._stock) <= 20:
+            c.restock(int(num_comics_stock.get()))
+            message2.set("You stocked {} {} comics".format(int(num_comics_stock.get()), c._name))
 
-                elif int(num_comics_stock.get()) < 1:
-                    message2.set("Please enter a positive intiger")
+        elif int(num_comics_stock.get()) < 1:
+            message2.set("Please enter a positive intiger")
 
-                elif (int(num_comics_stock.get()) + c._stock) > 20:
-                    message2.set("You can only have maximum 20 comics")
+        elif (int(num_comics_stock.get()) + c._stock) > 20:
+            message2.set("You can only have maximum 20 comics")
 
-        except ValueError:
-            message2.set("Please enter an integer")
+    except ValueError:
+        message2.set("Please enter an integer")
 
     update_label()
 
 def new_comic():
-    try:
-        if add_title.get() == '':
-            message3.set("Please enter the comic title")
-        elif int(add_stock.get()) < 1:
-            message3.set("Please enter a value greater than 1")
-        elif int(add_stock.get()) > 20:
-            message3.set("you can only stock 20 comics")
-        else:
-            Comics(add_title.get(), int(add_stock.get()))
-            update_label()
-            message3.set("")
-            update_menu()
-    except ValueError:
-        message3.set("Please type in an integer")
+        try:
+            if add_title.get() == '':
+                message3.set("Please enter the comic title")
+            elif int(add_stock.get()) < 1:
+                message3.set("Please enter a value greater than 1")
+            elif int(add_stock.get()) > 20:
+                message3.set("you can only stock 20 comics")
+            elif add_title.get() in comic_names:
+                message3.set("dont try to break me with duplicates")
+
+            else:
+                Comics(add_title.get(), int(add_stock.get()))
+                update_label()
+                message3.set("")
+                update_menu()
+        except ValueError:
+            message3.set("Please type in an integer")
 
 def delete_comic():
     for c in comics:
@@ -151,7 +152,7 @@ root.geometry('800x1000')
 #-------------------------------------------------------------------------------
 #INFO PANEL
 info_label = Label(root, text="Comics In stock", justify=LEFT)
-info_label.grid(row = 12, column = 0)
+info_label.grid(row = 12, column = 0) 
 
 comic_info_name = StringVar()
 comic_info_stock = StringVar()
@@ -278,3 +279,5 @@ del_button.grid(row = 8, column = 2)
 #-------------------------------------------------------------------------------
 update_label()
 root.mainloop()
+
+
