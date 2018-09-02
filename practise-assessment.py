@@ -10,12 +10,12 @@ class Ticket:
         self._capacity = capacity
         self._cost = cost
         tickets.append(self)
-        
+
 def update_label():
     ticket_info.set("")
     for t in tickets:
         ticket_info.set(ticket_info.get() + t._time + t._capacity + "  $" + str(t._cost) + "\n")
-        
+
 time = []
 capacity = []
 cost = []
