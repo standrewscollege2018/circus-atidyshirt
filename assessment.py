@@ -1,6 +1,33 @@
 from tkinter import *
 #-------------------------------------------------------------------------------
-#FUNCTIONS
+#FUNCTIONS & OBJECT ORIENTATION
+def update_label():
+    comic_info.set("")
+    for p in comics:
+        comic_info.set(comic_info.get() + p._name + "    Comics Available:   " + str(p._amount) + "    Comics Sold:   " + str(p._sold) + "\n")
+
+def update_menu():
+    #letting menus be called within the function
+    global sell_menu
+    global restock_menu
+    global del_menu
+
+    #refreshing dropdown menu for selling items
+    sell_menu.grid_forget()
+    sell_menu = OptionMenu(root, selected_comic_sell, *comic_names)
+    sell_menu.grid(row=2, column = 0)
+
+    #refreshing dropdown menu for restocking items
+    restock_menu.grid_forget()
+    restock_menu = OptionMenu(root, selected_comic_stock, *comic_names)
+    restock_menu.grid(row=2, column = 2)
+
+    #refreshing dropdown menu for deleting items
+    del_menu.grid_forget()
+    del_menu = OptionMenu(root, del_name, *comic_names)
+    del_menu.grid(row = 7, column = 2)  
+
+#placeholder functions are used to display pre-fills in all entry fields
 def comic_add_placeholder(event):
     add_title.set("")
     
@@ -46,40 +73,46 @@ def stock_comics():
             if selected_comic_stock.get() == c._name:
                 if int(num_comics_stock.get()) >= 1 and int(num_comics_stock.get()) <= 99999:
                     c._stock += int(num_comics_stock.get())
-                    message.set("You re-stocked {} Comics".format(int(num_comics_stock.get())))
+                    message2.set("You re-stocked {} Comics".format(int(num_comics_stock.get())))
 
                 elif int(num_comics_stock.get()) <= 0:
-                    message.set("Please enter a positive intiger")
+                    message2.set("Please enter a positive intiger")
 
         except ValueError:
-            message.set("Please enter an integer value")
+            message2.set("Please enter an integer value")
 
     update_label()
     
 def new_comic():
     try:
         if add_title.get() == '':
-            message.set("Please enter a title for the comic")
+            message3.set("Please enter a title for the comic")
         elif int(add_stock.get()) <= 0:
-            message.set("Please enter a value that is larger than 0")
+            message3.set("Please enter a positive intiger")
         else:
             Comics(add_title.get(), int(add_stock.get()))
             update_label()
-            message.set("")
-            #adding new comic to dropdowns
-            comic_menu = OptionMenu(root, selected_comic_sell, *comic_names)
-            comic_menu.grid(row=3, column = 0)
-            comic_menu = OptionMenu(root, selected_comic_stock, *comic_names)
-            comic_menu.grid(row=3, column = 2)
+            message3.set("")
+            update_menu()
             
     except ValueError:
-        message.set("Please type in an integer value")
+        message3.set("Please type in an integer value")
+        message3.set("Please type in an integer value")
 
+def del_comic():
+    for i in comics:
+        if del_name.get() == i._name:
+            comics.remove(i)
+            comic_names.remove(i._name)
+            update_label()
+            update_menu()         
+        
 #END OF FUNCTIONS
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 #OBJECT ORIENTATION
+
 class Comics:
     def __init__(self, name, stock):
         self._name = name   
@@ -90,7 +123,7 @@ class Comics:
 
 root = Tk()
 root.title("comics")
-root.geometry('800x800')
+root.geometry('560x400')
 
 #arrays storing all info and names
 comics = []
@@ -99,19 +132,22 @@ comic_names = []
 Comics("Python Panic", 8)
 Comics("Scratch The Cat", 12)
 Comics("Tony Tkinter", 3)
-#END OF OBJECT ORIENTATION
+#END OF FUNCTIONS & OBJECT ORIENTATION
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 #INFO PANEL
+info_label = Label(root, text="Comics In stock", justify=LEFT)
+info_label.grid(row = 12, column = 0)
+
 comic_info_name = StringVar()
 comic_info_stock = StringVar()
 
 comic_label_name = Label(root, textvariable=comic_info_name, justify=LEFT)
-comic_label_name.grid(row=0, column = 0)
+comic_label_name.grid(row=13, column = 0)
 
 comic_label_stock = Label(root, textvariable=comic_info_stock, justify=LEFT)
-comic_label_stock.grid(row=0, column = 1)
+comic_label_stock.grid(row=13, column = 1)
 #END OF INFO PANEL
 #-------------------------------------------------------------------------------
 
@@ -119,26 +155,26 @@ comic_label_stock.grid(row=0, column = 1)
 #-------------------------------------------------------------------------------
 #SELLING PANEL
 #Heading
-sell_items = Label(root, text = "Sell Comics", justify=LEFT)
-sell_items.grid(row=1, column = 0)
+sell_items = Label(root, text = "Sell Comic(s)", justify=LEFT)
+sell_items.grid(row=0, column = 0)
 
 #selecting from list
 selected_comic_sell = StringVar()
 selected_comic_sell.set(comic_names[0])
 
 #Dropdown
-comic_menu = OptionMenu(root, selected_comic_sell, *comic_names)
-comic_menu.grid(row=3, column = 0)
+sell_menu = OptionMenu(root, selected_comic_sell, *comic_names)
+sell_menu.grid(row=2, column = 0)
 
 num_comics_sell = StringVar()
 num_comics_sell.set("Quantity: ")
 
 comic_entry = Entry(root, textvariable=num_comics_sell, justify=LEFT)
-comic_entry.grid(row=3, column = 1)
+comic_entry.grid(row=3, column = 0)
 comic_entry.bind("<Button-1>", sell_comic_placeholder)
 
-select_btn = Button(root, text="Select", command=sell_comics, justify=RIGHT)
-select_btn.grid(row=5, column = 1)
+sell_btn = Button(root, text="Sell Comics", command=sell_comics, justify=RIGHT)
+sell_btn.grid(row=4, column = 0)
 
 #message re-direct
 message = StringVar()
@@ -146,48 +182,51 @@ message.set("")
 
 #selling Comic error
 error_message_sell = Label(root, textvariable=message, fg="red")
-error_message_sell.grid(row=4, column = 1)
+error_message_sell.grid(row=5, column = 0)
 #END OF SELLING PANEL
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 #RE-STOCK PANEL
 #Heading
-stock_items = Label(root, text = "Restock Comics", justify=LEFT)
-stock_items.grid(row=1, column = 2)
+stock_items = Label(root, text = "Restock Comic(s)", justify=LEFT)
+stock_items.grid(row=0, column = 2)
 
-#selecting from list
+#string
 selected_comic_stock = StringVar()
 selected_comic_stock.set(comic_names[0])
 
 #Dropdown
-comic_menu = OptionMenu(root, selected_comic_stock, *comic_names)
-comic_menu.grid(row=3, column = 2)
+restock_menu = OptionMenu(root, selected_comic_stock, *comic_names)
+restock_menu.grid(row=2, column = 2)
 
+#string
 num_comics_stock = StringVar()
 num_comics_stock.set("Quantity: ")
 
+#creating entry field
 comic_entry_stock = Entry(root, textvariable=num_comics_stock, justify=LEFT)
-comic_entry_stock.grid(row=3, column = 3)
+comic_entry_stock.grid(row=3, column = 2)
 comic_entry_stock.bind("<Button-1>", restock_comic_placeholder)
 
-select_btn_stock = Button(root, text="Select", command=stock_comics, justify=RIGHT)
-select_btn_stock.grid(row=5, column = 3)
+#select button to push the command
+select_btn_stock = Button(root, text="Stock comics", command=stock_comics, justify=RIGHT)
+select_btn_stock.grid(row=4, column = 2)
 
 #message re-direct
-message = StringVar()
-message.set("")
+message2 = StringVar()
+message2.set("")
 
 #restock Comic error
-error_message_sell = Label(root, textvariable=message, fg="red")
-error_message_sell.grid(row=4, column = 3)
+error_message_stock = Label(root, textvariable=message2, fg="red")
+error_message_stock.grid(row=5, column = 2)
 #END OF RE-STOCK PANEL
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 #ADDING NEW COMICS
 #label
-add_comic = Label(root, text="Add New Comic")
+add_comic = Label(root, text="Add New Comic(s)")
 add_comic.grid(row = 6, columnspan = 1)
 
 #setting to string variable
@@ -209,19 +248,37 @@ stock_enter.grid(row = 8, column = 0)
 stock_enter.bind("<Button-1>", comic_add_stock_placeholder)
 
 #submit button
-add_btn = Button(root, text="Select", command=new_comic)
-add_btn.grid(row = 10, columnspan = 1)
+add_button = Button(root, text="Add Comic", command=new_comic)
+add_button.grid(row = 9, columnspan = 1)
 
 #error checking
-message = StringVar()
-message.set("")
+message3 = StringVar()
+message3.set("")
 
-add_error = Label(root, textvariable=message, fg="red")
-add_error.grid(row= 9 , columnspan = 2)
+add_error = Label(root, textvariable=message3, fg="red")
+add_error.grid(row= 10 , columnspan = 1)
 #END OF ADDING NEW COMICS
 #-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
+#DELETE COMICS
+#label
+del_comic = Label(root, text="Delete Comic(s)")
+del_comic.grid(row = 6, column = 2)
 
+#setting as string
+del_name = StringVar()
+del_name.set(comic_names[0])
+
+#creating dropdown menu
+del_menu = OptionMenu(root, del_name, *comic_names)
+del_menu.grid(row = 7, column = 2)
+
+#delete button (pushing the command (function))
+del_button = Button(root, text="Delete comic", command=del_comic)
+del_button.grid(row = 8, column = 2)
+#END OF DELETE COMICS
+#-------------------------------------------------------------------------------
 
 update_label()
 root.mainloop()
