@@ -24,21 +24,27 @@ def update_menu():
     global restock_menu
     global del_menu
     
-    #refreshing dropdown menu for selling items
-    sell_menu.grid_forget()
-    sell_menu = OptionMenu(root, selected_comic_sell, *comic_names)
-    sell_menu.grid(row=2, column = 0)
+    if comics == []:
+        selected_comic_stock.set("No Items")
+        selected_comic_sell.set("No Items")
+        del_name.set("No Items")
+        
+    else:
+        #refreshing dropdown menu for selling items
+        sell_menu.grid_forget()
+        sell_menu = OptionMenu(root, selected_comic_sell, *comic_names)
+        sell_menu.grid(row=2, column = 0)
 
-    #refreshing dropdown menu for restocking items
-    restock_menu.grid_forget()
-    restock_menu = OptionMenu(root, selected_comic_stock, *comic_names)
-    restock_menu.grid(row=2, column = 2)
+        #refreshing dropdown menu for restocking items
+        restock_menu.grid_forget()
+        restock_menu = OptionMenu(root, selected_comic_stock, *comic_names)
+        restock_menu.grid(row=2, column = 2)
 
 
-    #refreshing dropdown menu for deleting items
-    del_menu.grid_forget()
-    del_menu = OptionMenu(root, del_name, *comic_names)
-    del_menu.grid(row = 7, column = 2)
+        #refreshing dropdown menu for deleting items
+        del_menu.grid_forget()
+        del_menu = OptionMenu(root, del_name, *comic_names)
+        del_menu.grid(row = 7, column = 2)
 
 #placeholder functions are used to display pre-fills in all entry fields
 def comic_add_placeholder(event):
@@ -76,8 +82,6 @@ def sell_comics():
         except ValueError:
             message_sell.set("please enter an intiger")
 
-    update_label()
-
 def stock_comic():
 #The function restock_comic() is used to restock the amount of a comic. First we loop through the comics.
 #after a comic in the loop is equal to the name entered, we restock the comic based on the user's input.
@@ -99,8 +103,6 @@ def stock_comic():
 
         except ValueError:
             message2.set("Please enter an integer")
-
-            update_label()
 
 def new_comic():
 #this function is used to add a new comic to the lists of comics. If the values
@@ -144,8 +146,10 @@ def delete_comic():
                     comic_names.remove(c._name)
                     update_label()
                     update_menu()
+                    
             except ValueError:
-                message_del.set("there are no items left to delete")
+                message_del.set("enter a valid input")
+
 
 #END OF FUNCTIONS
 #-------------------------------------------------------------------------------
