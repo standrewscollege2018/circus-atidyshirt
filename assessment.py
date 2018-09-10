@@ -30,6 +30,11 @@ def update_menu():
         del_name.set("No Items")
         
     else:
+        #set variables to the first in menu
+        selected_comic_stock.set(comic_names[0])
+        selected_comic_sell.set(comic_names[0])
+        del_name.set(comic_names[0])
+        
         #refreshing dropdown menu for selling items
         sell_menu.grid_forget()
         sell_menu = OptionMenu(root, selected_comic_sell, *comic_names)
@@ -121,10 +126,10 @@ def new_comic():
                 message_add.set("you can only stock 20 comics")
             elif title.strip() == "":
                 message_add.set("dont enter blank spaces")
-            elif title.lower() in comic_names:
+            elif title.lower().strip() in comic_names:
                 message_add.set("dont try to break me with duplicates")
             else:
-                Comics(add_title.get(), int(add_stock.get()), 0)
+                Comics(title.strip(), int(add_stock.get()), 0)
                 update_label()
                 message_add.set("")
                 update_menu()
@@ -156,8 +161,8 @@ def delete_comic():
 
 #-------------------------------------------------------------------------------
 #OBJECT ORIENTATION
-
 class Comics:
+#class storing all information on stock details
     def __init__(self, name, stock, sold):
         self._name = name.lower()
         self._stock = stock
